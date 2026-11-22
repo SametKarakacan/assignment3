@@ -4,11 +4,11 @@ type TaskRowProps = { task: Task; onNext: () => void; onDelete: () => void }
 
 export default function TaskRow({ task, onNext, onDelete }: TaskRowProps) {
   return (
-    <li style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <span style={{ flex: 1 }}>{task.title}</span>
-      <em>{task.status}</em>
-      <button onClick={onNext}>Next</button>
-      <button onClick={onDelete}>Delete</button>
+    <li className="task-row">
+      <span className="title">{task.title}</span>
+      <em className={`status status-${task.status}`}>{task.status}</em>
+      <button type="button" onClick={onNext}>Next</button>
+      <button type="button" onClick={onDelete}>Delete</button>
     </li>
   )
 }
