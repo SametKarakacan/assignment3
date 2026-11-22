@@ -1,7 +1,7 @@
 # Assignment 3: Task Manager with a Reducer
 
-**Name:** Ad Soyad
-**Student number:** 0000000000
+**Name:** Samet Kaan Karakaçan
+**Student number:** 2022502147
 
 MIS 233 Web Based Application Programming, Week 5.
 
@@ -75,29 +75,29 @@ PASTE THE OUTPUT OF npm test HERE
 
 ## Bonus 3: Explain your reducer
 
-A reducer must be pure because React decides whether to re-render by comparing the old state
-and the new state by reference. If the reducer mutates the old state, for example with
-`state.tasks.push(task)`, and returns the same object, React sees the same reference and may
-skip the render, so the screen does not update. Mutation also breaks features that rely on
-old states, such as Undo: the lists saved in `past` would change together with the current
-list. In development, StrictMode calls the reducer twice, so a reducer with side effects would
-do the side effect twice.
+**Why the reducer must be pure.** A reducer gets the old state and an action and returns the
+new state. It must not change anything else. React compares the old state and the new state
+to see if something changed. If I change the old state directly, for example with
+`state.tasks.push(task)`, the reference stays the same. React thinks nothing changed and the
+screen does not update. My Undo would also break, because the old lists in `past` would change
+too.
 
-The caller creates the id with `crypto.randomUUID()` because a random id would make the
-reducer impure: the same state and action would give a different result every time. That
-makes the reducer hard to test, and in StrictMode the two calls would produce two different
-ids. With the id inside the action, the action fully describes what happened.
+**Why the caller creates the id.** `crypto.randomUUID()` gives a different value every time.
+If the reducer called it, the same state and the same action would give different results, so
+the reducer would not be pure. It would also be hard to test. In development, React runs the
+reducer twice, so the two runs would make two different ids. So I make the id in `AddForm`
+and put it in the action.
 
-The filtered list and the counts are derived because they can always be computed from
-`tasks` and `filter`. If I stored a `filteredTasks` array, I would have to update it in every
-action. If I forgot one case, for example `advance`, a task moved to Done would still show
-under the To do filter and the counts would be wrong. Computing them while rendering means
-there is only one source of truth.
+**Why the list and the counts are derived.** I can always compute the filtered list and the
+counts from `tasks` and `filter`. If I stored them in state, I would have to update them in
+every action. If I forgot one, they would go stale. For example, if `advance` did not update a
+stored `filteredTasks`, a task that became done would still show under the To do filter, and
+the counts would be wrong. Computing them while rendering keeps one source of truth.
 
-Moving the filter into the reducer state made Undo easier: one action can change both the
-tasks and the filter, and the reducer alone decides that the filter is not part of the undo
-history. It also made the filter testable without React. A small cost is that every component
-that changes the filter needs `dispatch` instead of a simple setter.
+**What changed when the filter moved into the reducer.** It became easier to keep all the
+rules in one place. The reducer decides that changing the filter is not saved in `past`, so
+Undo only works on tasks. I can also test the filter without React. One small downside is that
+I need `dispatch` with an action instead of a simple `setFilter` function.
 
 ## Bonus 4: Git repository
 

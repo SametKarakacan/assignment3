@@ -1,4 +1,4 @@
-// Ad Soyad, Öğrenci No: 0000000000
+// Samet Kaan Karakaçan, Öğrenci No: 2022502147
 // MIS 233 Assignment 3: Task Manager with a Reducer
 import type { Filter } from './filter'
 
