@@ -5,9 +5,10 @@ import type { Filter } from './filter'
 export type Status = 'todo' | 'in-progress' | 'done'
 export type Task = { id: string; title: string; status: Status }
 
-export type State = { tasks: Task[]; filter: Filter }
+// past holds the earlier task lists for Undo (Bonus 1), the newest one last.
+export type State = { tasks: Task[]; filter: Filter; past: Task[][] }
 
-export const initialState: State = { tasks: [], filter: 'all' }
+export const initialState: State = { tasks: [], filter: 'all', past: [] }
 
 export type Action =
   | { type: 'add'; id: string; title: string }
@@ -15,6 +16,7 @@ export type Action =
   | { type: 'remove'; id: string }
   | { type: 'setFilter'; filter: Filter }
   | { type: 'clearDone' }
+  | { type: 'undo' }
 
 const NEXT: Record<Status, Status> = {
   todo: 'in-progress',
@@ -28,26 +30,47 @@ function assertNever(x: never): never {
   throw new Error(`Unhandled action: ${JSON.stringify(x)}`)
 }
 
+// Puts the new task list in place and remembers the old one, so Undo can bring it back.
+// The old array can be kept as it is, because the reducer never changes an array.
+function commit(state: State, tasks: Task[]): State {
+  return { ...state, tasks, past: [...state.past, state.tasks] }
+}
+
+function hasTask(tasks: Task[], id: string): boolean {
+  return tasks.some((t) => t.id === id)
+}
+
 export function taskReducer(state: State, action: Action): State {
   switch (action.type) {
     case 'add':
-      return {
-        ...state,
-        tasks: [...state.tasks, { id: action.id, title: action.title, status: 'todo' }],
-      }
+      return commit(state, [
+        ...state.tasks,
+        { id: action.id, title: action.title, status: 'todo' },
+      ])
     case 'advance':
-      return {
-        ...state,
-        tasks: state.tasks.map((t) =>
-          t.id === action.id ? { ...t, status: NEXT[t.status] } : t,
-        ),
-      }
+      // An unknown id changes nothing, so it does not add an Undo step either.
+      if (!hasTask(state.tasks, action.id)) return state
+      return commit(
+        state,
+        state.tasks.map((t) => (t.id === action.id ? { ...t, status: NEXT[t.status] } : t)),
+      )
     case 'remove':
-      return { ...state, tasks: state.tasks.filter((t) => t.id !== action.id) }
+      if (!hasTask(state.tasks, action.id)) return state
+      return commit(state, state.tasks.filter((t) => t.id !== action.id))
     case 'setFilter':
+      // Only the filter changes; past stays the same, so changing the filter is not undoable.
       return { ...state, filter: action.filter }
     case 'clearDone':
-      return { ...state, tasks: state.tasks.filter((t) => t.status !== 'done') }
+      if (!state.tasks.some((t) => t.status === 'done')) return state
+      return commit(state, state.tasks.filter((t) => t.status !== 'done'))
+    case 'undo': {
+      if (state.past.length === 0) return state
+      return {
+        ...state,
+        tasks: state.past[state.past.length - 1],
+        past: state.past.slice(0, -1),
+      }
+    }
     default:
       return assertNever(action)
   }
