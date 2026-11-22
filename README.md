@@ -31,46 +31,58 @@ screenshots/
   all.png  todo.png  in-progress.png  done.png
 ```
 
-- The state is `{ tasks, filter, past }`. `past` is only there for Bonus 1.
-- Actions: `add`, `advance`, `remove`, `setFilter`, `clearDone` and `undo`.
-- The reducer's `switch` ends with `default: return assertNever(action)`. If a new action
-  is added to `Action` and not handled, TypeScript reports an error there.
-- `App` computes `filterTasks(state.tasks, state.filter)` and `countByFilter(state.tasks)`
-  while rendering. Neither is stored in state.
-- The id of a new task is made with `crypto.randomUUID()` in `AddForm`, not in the reducer.
+* The state is `{ tasks, filter, past }`. `past` is only there for Bonus 1.
+* Actions: `add`, `advance`, `remove`, `setFilter`, `clearDone` and `undo`.
+* The reducer's `switch` ends with `default: return assertNever(action)`. If a new action
+is added to `Action` and not handled, TypeScript reports an error there.
+* `App` computes `filterTasks(state.tasks, state.filter)` and `countByFilter(state.tasks)`
+while rendering. Neither is stored in state.
+* The id of a new task is made with `crypto.randomUUID()` in `AddForm`, not in the reducer.
 
 ## Bonus 1: Undo
 
-The state is `{ tasks: Task[]; filter: Filter; past: Task[][] }`. Every action that really
+The state is `{ tasks: Task\[]; filter: Filter; past: Task\[]\[] }`. Every action that really
 changes the task list (`add`, `advance`, `remove`, `clearDone`) goes through a small `commit`
 helper that pushes the old `tasks` array onto `past`. The `undo` action takes the last list
 from `past` back into `tasks`.
 
-- `setFilter` does not touch `past`, so changing the filter is not undoable.
-- Undo after `clearDone` brings the cleared tasks back.
-- `undo` with an empty `past` returns the same state, and the Undo button is disabled then.
-- An action that changes nothing (an unknown id, or `clearDone` with no done tasks) returns
-  the same state, so it does not add an empty Undo step.
-- Keeping the old arrays in `past` is safe because the reducer never mutates an array.
+* `setFilter` does not touch `past`, so changing the filter is not undoable.
+* Undo after `clearDone` brings the cleared tasks back.
+* `undo` with an empty `past` returns the same state, and the Undo button is disabled then.
+* An action that changes nothing (an unknown id, or `clearDone` with no done tasks) returns
+the same state, so it does not add an empty Undo step.
+* Keeping the old arrays in `past` is safe because the reducer never mutates an array.
 
 ## Bonus 2: Tests
 
 Vitest tests in `src/taskReducer.test.ts` and `src/filter.test.ts`, run with `npm test`
 (32 tests). They cover:
 
-- every action: `add`, `advance`, `remove`, `setFilter`, `clearDone`, `undo`;
-- `advance` three times returning to `todo`;
-- purity: the old state is deep-frozen with `Object.freeze` and compared with a
-  `structuredClone` copy after every action; `advance` returns a new array and a new task object;
-- `filterTasks` and `countByFilter`;
-- edge cases: an unknown id, an empty list, `clearDone` with nothing done, counts after a
-  delete, counts after `advance` and `clearDone`, undo with nothing to undo, undo all the way
-  back to `initialState`.
+* every action: `add`, `advance`, `remove`, `setFilter`, `clearDone`, `undo`;
+* `advance` three times returning to `todo`;
+* purity: the old state is deep-frozen with `Object.freeze` and compared with a
+`structuredClone` copy after every action; `advance` returns a new array and a new task object;
+* `filterTasks` and `countByFilter`;
+* edge cases: an unknown id, an empty list, `clearDone` with nothing done, counts after a
+delete, counts after `advance` and `clearDone`, undo with nothing to undo, undo all the way
+back to `initialState`.
 
 Output of `npm test`:
 
 ```
-PASTE THE OUTPUT OF npm test HERE
+> task-manager-assignment3@0.0.0 test
+> vitest run
+
+ RUN  v4.1.12 C:/Users/HECTOR/Downloads/assignment3/assignment3
+
+ ✓ src/filter.test.ts (10 tests) 5ms
+ ✓ src/taskReducer.test.ts (22 tests) 8ms
+
+ Test Files  2 passed (2)
+      Tests  32 passed (32)
+   Start at  19:40:53
+   Duration  336ms (transform 84ms, setup 0ms, import 134ms, tests 13ms, environment 0ms)
+
 ```
 
 ## Bonus 3: Explain your reducer
@@ -104,4 +116,5 @@ I need `dispatch` with an action instead of a simple `setFilter` function.
 PASTE THE REPOSITORY LINK HERE
 
 The history has one commit per step (starter, filter functions, state change, filter bar,
-undo, tests, README and screenshots). `.gitignore` leaves out `node_modules` and `dist`.
+undo, tests, README and screenshots). `.gitignore` leaves out `node\_modules` and `dist`.
+
