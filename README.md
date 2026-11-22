@@ -113,7 +113,7 @@ I need `dispatch` with an action instead of a simple `setFilter` function.
 
 ## Bonus 4: Git repository
 
-PASTE THE REPOSITORY LINK HERE
+https://github.com/SametKarakacan/assignment3
 
 The history has one commit per step (starter, filter functions, state change, filter bar,
 undo, tests, README and screenshots). `.gitignore` leaves out `node\_modules` and `dist`.
