@@ -41,7 +41,7 @@ while rendering. Neither is stored in state.
 
 ## Bonus 1: Undo
 
-The state is `{ tasks: Task\[]; filter: Filter; past: Task\[]\[] }`. Every action that really
+The state is `{ tasks: Task[]; filter: Filter; past: Task[][] }`. Every action that really
 changes the task list (`add`, `advance`, `remove`, `clearDone`) goes through a small `commit`
 helper that pushes the old `tasks` array onto `past`. The `undo` action takes the last list
 from `past` back into `tasks`.
@@ -116,5 +116,5 @@ I need `dispatch` with an action instead of a simple `setFilter` function.
 https://github.com/SametKarakacan/assignment3
 
 The history has one commit per step (starter, filter functions, state change, filter bar,
-undo, tests, README and screenshots). `.gitignore` leaves out `node\_modules` and `dist`.
+undo, tests, README and screenshots). `.gitignore` leaves out `node_modules` and `dist`.
 
